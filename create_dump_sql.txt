@@ -1,0 +1,6 @@
+CREATE DATABASE sales;
+USE sales;
+CREATE TABLE sales_data(product_id INT PRIMARY KEY, customer_id INT, price INT, quantity INT, timestamp DATE);
+CREATE INDEX ts ON sales_data (timestamp);
+
+-- dumpsql: mysqldump sales sales_data > sales_data.sql
