@@ -1,0 +1,48 @@
+-- Using grouping sets to query total sales from each country and category
+
+select country,category, count(orderid) as totalsales
+	from "FactSales"
+	left join "DimCountry"
+	on "FactSales".countryid = "DimCountry".countryid
+	left join "DimCategory"
+	on "FactSales".categoryid="DimCategory".categoryid
+	group by grouping sets(country,category)
+	ORDER by country;
+
+-- SELECT * FROM public."FactSales" LIMIT 5;
+
+-- Using rollups to query total sales from each year and country
+
+select year,country, count(orderid) as totalsales
+	from "FactSales"
+	left join "DimCountry"
+	on "FactSales".countryid = "DimCountry".countryid
+	left join "DimDate"
+	on "FactSales".dateid="DimDate".dateid
+	group by rollup(year,country)
+	ORDER by year,country;
+
+-- SELECT * FROM public."FactSales" LIMIT 5;
+
+-- Using cubes to query average sales from each year and country
+
+select year,country, avg(amount) as average_sales
+	from "FactSales"
+	left join "DimCountry"
+	on "FactSales".countryid = "DimCountry".countryid
+	left join "DimDate"
+	on "FactSales".dateid="DimDate".dateid
+	group by cube(year,country)
+	ORDER by year,country;
+
+-- Using materialized querying tables to determine total sales amount by country
+
+CREATE MATERIALIZED VIEW total_sales_per_country (country, total_sales) AS
+	(select country, sum(amount)
+	from "FactSales"
+	left join "DimCountry"
+	on "FactSales".countryid = "DimCountry".countryid
+	group by country
+	order by country);
+
+SELECT * FROM total_sales_per_country LIMIT 5;
