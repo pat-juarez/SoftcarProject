@@ -1,0 +1,37 @@
+# In shell, import a file to MongoDB
+
+mongoimport -u root -p <password> --authenticationDatabase admin --db catalog --collection electronics --file catalog.json --host mongo
+
+# In MongoDB CLI, create a new database and a new collection
+
+use catalog
+db.createCollection("electronics")
+
+# list available databases
+
+list dbs
+
+# list available collections within the database
+
+show collections
+
+# create an index on field 'type'
+
+db.electronics.createIndex({"type":1})
+
+# count of smart phones
+
+db.electronics.countDocuments({'type': 'smart phone'})
+
+# find all smart phones with screen size equal to 6 in
+
+db.electronics.find({'type': 'smart phone'},{"screen size":"6"})
+
+# find average size for smart phones
+
+db.electronics.aggregate([{"$group":{"_id":"$type","average":{"$avg":"$screen size"}}}])
+
+# Back to shell, export certain fields to CSV
+
+mongoexport -u root -p <password> --authenticationDatabase admi
+n --db catalog --collection electronics --out electronics.csv --type=csv --fields _id,type,model --host mongo
